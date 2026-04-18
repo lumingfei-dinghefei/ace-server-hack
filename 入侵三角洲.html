@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP规则</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* 开场欢迎页 */
+        .start-page {
+            width: 100%;
+            height: 100vh;
+            background: #ffd6e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.5s;
+        }
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff69b4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+        }
+        .title span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(-30px);
+            animation: titleDrop 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+        @keyframes titleDrop {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 卡密验证页 */
+        .login-page {
+            width: 100%;
+            height: 100vh;
+            background: #ffd6e0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+            border: 2px solid transparent;
+            animation: rainbowBorder 3s linear infinite;
+        }
+        @keyframes rainbowBorder {
+            0% { border-color: red; }
+            25% { border-color: yellow; }
+            50% { border-color: lime; }
+            75% { border-color: blue; }
+            100% { border-color: red; }
+        }
+        .login-box h2 {
+            color: #ff69b4;
+            margin-bottom: 20px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ff69b4;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .buy-key {
+            color: #ff69b4;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .tip {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* 公告弹窗 */
+        .notice-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.3);
+            align-items: center;
+            justify-content: center;
+        }
+        .notice-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .notice-box h3 {
+            color: #ff69b4;
+            margin-bottom: 15px;
+        }
+        .notice-tag {
+            background: #ff69b4;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .notice-content {
+            background: linear-gradient(to right, #ff69b4, #b86ed9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .know-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 入侵动画页 */
+        .hack-page {
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .hack-text {
+            font-size: 28px;
+            color: #00ff41;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .hack-text span {
+            display: inline-block;
+            opacity: 0;
+            animation: hackFade 1s forwards;
+        }
+        .hack-text span:nth-child(1) { animation-delay: 0.5s; }
+        .hack-text span:nth-child(2) { animation-delay: 1.5s; }
+        @keyframes hackFade {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1. 开场欢迎页 -->
+<div class="start-page" id="startPage">
+    <div class="title" id="title">
+        <!-- 文字会被JS拆分成逐字动画 -->
+    </div>
+</div>
+
+<!-- 2. 卡密验证页 -->
+<div class="login-page" id="loginPage">
+    <div class="login-box">
+        <h2>卡密验证</h2>
+        <input type="text" id="cardKey" placeholder="请输入卡密">
+        <button class="login-btn" onclick="checkKey()">验证</button>
+        <div class="buy-key">购买卡密</div>
+        <div class="tip" id="errTip"></div>
+    </div>
+</div>
+
+<!-- 3. 公告弹窗 -->
+<div class="notice-modal" id="noticeModal">
+    <div class="notice-box">
+        <h3>欢迎VIP规则</h3>
+        <div class="notice-tag">官方公告</div>
+        <div class="notice-content">
+            规则一直都在哦~<br>
+            就像我对你的爱，从未缺席
+        </div>
+        <button class="know-btn" onclick="closeNotice()">我知道啦</button>
+    </div>
+</div>
+
+<!-- 4. 入侵动画页 -->
+<div class="hack-page" id="hackPage">
+    <div class="hack-text">
+        <span>规则已入侵ACE超自然服务器</span>
+        <span>稳定奔放</span>
+    </div>
+</div>
+
+<script>
+// 1. 开场逐字动画
+const titleText = "规则VIP用户欢迎";
+const titleEl = document.getElementById("title");
+titleText.split("").forEach((char, i) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    span.style.animationDelay = `${i * 0.1}s`;
+    titleEl.appendChild(span);
+});
+
+// 开场动画结束后，切换到卡密页
+setTimeout(() => {
+    document.getElementById("startPage").style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById("startPage").style.display = "none";
+        document.getElementById("loginPage").style.display = "flex";
+    }, 500);
+}, 2000);
+
+// 2. 卡密验证逻辑
+const RIGHT_KEY = "VIP666"; // 你可以改成自己的卡密
+function checkKey() {
+    const val = document.getElementById("cardKey").value.trim();
+    const tip = document.getElementById("errTip");
+    if (val === RIGHT_KEY) {
+        tip.innerText = "";
+        // 验证成功，弹出公告
+        document.getElementById("noticeModal").style.display = "flex";
+    } else {
+        tip.innerText = "卡密错误，请重新输入";
+    }
+}
+
+// 3. 关闭公告，进入入侵页
+function closeNotice() {
+    document.getElementById("noticeModal").style.display = "none";
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("hackPage").style.display = "flex";
+}
+</script>
+</body>
+</html>
